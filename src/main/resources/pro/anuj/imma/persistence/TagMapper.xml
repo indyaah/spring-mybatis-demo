@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="pro.anuj.imma.persistence.TagMapper">
+
+	<resultMap id="BaseResultMap" type="pro.anuj.imma.domain.Tag">
+		<result column="Id" property="id" jdbcType="INTEGER" />
+		<result column="Partner" property="partner" jdbcType="VARCHAR" />
+		<result column="Property" property="property" jdbcType="VARCHAR" />
+		<result column="Device" property="device" jdbcType="VARCHAR" />
+		<result column="City" property="city" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Base_Column_List">Id, Property, Partner, Device, City</sql>
+
+	<select id="searchTag" resultType="Integer" parameterType="map">
+		SELECT COALESCE(id,-1) FROM tag
+		WHERE partner = #{partner,jdbcType=VARCHAR}
+		<choose>
+			<when test="property !=null">AND property = #{property,jdbcType=VARCHAR}</when>
+			<otherwise>AND property = 'DC'</otherwise>
+		</choose>
+		<choose>
+			<when test="device !=null">AND device = #{device,jdbcType=VARCHAR}::DEVICETYPE</when>
+			<otherwise>AND device = 'DC'::DEVICETYPE</otherwise>
+		</choose>
+		<choose>
+			<when test="city !=null">AND city = #{city,jdbcType=VARCHAR}</when>
+			<otherwise>AND city = 'DC'</otherwise>
+		</choose>
+		Order By Partner, Property, Device, City
+		Limit 1
+	</select>
+</mapper>
